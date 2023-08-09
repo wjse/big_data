@@ -282,11 +282,11 @@ if(null != fs) fs.close();
 
 ### 7.1写数据过程
 
-![image-20230809171603989](/Users/k66/dev/big_data/HDFS1.png)
+![image-20230809171603989](HDFS1.png)
 
 ### 7.2 读数据过程
 
-![image-20230809172544304](/Users/k66/dev/big_data/HDFS2.png)
+![image-20230809172544304](HDFS2.png)
 
 ### 7.3 NameNode工作机制
 
@@ -294,11 +294,11 @@ if(null != fs) fs.close();
 
 防止Edits日志过大导致恢复慢，所以用SecondaryNameNode来辅助NameNode，SNN周期性请求NN进行checkpoint
 
-![image-20230809175035458](/Users/k66/dev/big_data/HDFS3.png)
+![image-20230809175035458](HDFS3.png)
 
 ### 7.4 DataNode工作机制
 
-![image-20230809180446265](/Users/k66/dev/big_data/HDFS4.png)
+![image-20230809180446265](HDFS4.png)
 
 ## 8. HDFS安全模式
 
