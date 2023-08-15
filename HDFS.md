@@ -1,4 +1,4 @@
-# HDFS
+#  HDFS
 
 HDFS是一个分布式，高容错，高吞吐量，支持流式数据传输的，可运行在廉价的硬件机器上的文件系统
 
@@ -207,7 +207,7 @@ hadoop fs -rm -r 'dir'
 hadoop fs -chmod xxx 'dir'
 hadoop fs -chown 'user':'group' 'dir or file'
 hadoop fs -du -h 'dir'
-hadoop fs -settrep 'num' 'file' #修改副本系数
+hadoop fs -setrep 'num' 'file' #修改副本系数
 hadoop fs -ls 'dir'
 
 
