@@ -42,7 +42,7 @@ Hadoop并行数据计算框架，分布式计算
 >
 > 广义上的Hadoop：
 >
-> ​	Hadoop生态圈：	![Hadoop生态圈](Hadoop生态圈.png)
+> ​	Hadoop生态圈：	![Hadoop生态圈](imgs/Hadoop生态圈.png)
 
 
 
