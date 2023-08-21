@@ -144,6 +144,17 @@ MRAppMaster:负责整个MR作业的调度/协调
 
 在MR编程中会有Mapper，Reducer的输入输出key，value的类型，如Text，IntWritable，它们是Hadoop提供的序列化类型，
 
+在Hadoop中KEY和VALUE都是要实现Writable接口，如果KEY要支持排序，那么需要实现WritableComparable接口
+
+自定义序列化：
+
+1. 实现Writable接口
+2. 默认无参构造方法
+3. 重写write()和readFields()，注意顺序问题
+4. 按需重写toString()
+
+KV类型都需要实现Writable接口，如果K需要排序则实现WritableComparable接口
+
 | Java中的数据类型 | Hadoop的序列化类型（Writable） |
 | ---------------- | ------------------------------ |
 | String           | Text                           |
@@ -156,6 +167,12 @@ MRAppMaster:负责整个MR作业的调度/协调
 | Boolean          | BooleanWritable                |
 | Null             | NullWritable                   |
 
+Hadoop中序列化特点：
+
+1. 紧凑
+2. 速度
+3. 扩展性
+4. 互操作
 
 
 Mapper ， Reducer源码：
@@ -173,4 +190,10 @@ map();
 cleanup();资源释放操作
 
 
+
+InputFormat:
+
+- HDFS：是以Block为单位进行存储
+- MR：是以InputSplit为单位的，是一个逻辑概念，InputSplit是交给MapTask来运行的
+- 数据进入流程：InputFormat ==> Mapper ==>Shuffle ==> Reducer ==> OutputFormat
 
