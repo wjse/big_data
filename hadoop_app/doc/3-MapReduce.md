@@ -191,7 +191,7 @@ cleanup();资源释放操作
 
 
 
-## 5.InputFormat:
+## 5.InputFormat
 
 - HDFS：是以Block为单位进行存储
 - MR：是以InputSplit为单位的，是一个逻辑概念，InputSplit是交给MapTask来运行的
@@ -208,3 +208,19 @@ FIleInputFormat的主要子类
 - NLineInputFormat，按照行数进行切片，不会根据block size进行切片
 - TextInputFormat
 
+DBInputFormat数据库输入操作
+
+
+
+## 6.Partitioner
+
+分区，Kafka，Spark，Flink都有
+
+根据指定的条件将结果输出到不同的文件中
+
+ reduce数量和分区数量（3）的关系:
+
+1. reduce = partitioner ,输出3个文件
+2. reduce > partitioner ,输出5个文件，有两个文件时空的，reduce数量决定输出文件数量
+3. reduce = 1 ,则输出1个文件，所有分区信息在该文件内
+4. reduce < partitioner , 则会报错
