@@ -191,7 +191,7 @@ cleanup();资源释放操作
 
 
 
-InputFormat:
+## 5.InputFormat:
 
 - HDFS：是以Block为单位进行存储
 - MR：是以InputSplit为单位的，是一个逻辑概念，InputSplit是交给MapTask来运行的

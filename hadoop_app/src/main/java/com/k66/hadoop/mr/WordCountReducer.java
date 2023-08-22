@@ -5,7 +5,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * KEYIN, 输入数据key数据类型,对应Mapper输出数据类型
