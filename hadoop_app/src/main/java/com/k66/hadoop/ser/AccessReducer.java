@@ -16,7 +16,6 @@ public class AccessReducer extends Reducer<Text , Access , NullWritable , Access
         long ups = 0;
         long downs = 0;
         for(Access access : values){
-            System.out.println(access);
             ups += access.getUp();
             downs += access.getDown();
         }

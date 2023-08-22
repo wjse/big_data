@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class WordCountDriver {
 
-    private static final String INPUT = "data";
+    private static final String INPUT = "data/wc";
     private static final String OUTPUT = "out";
 
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {

@@ -153,7 +153,7 @@ MRAppMaster:负责整个MR作业的调度/协调
 3. 重写write()和readFields()，注意顺序问题
 4. 按需重写toString()
 
-KV类型都需要实现Writable接口，如果K需要排序则实现WritableComparable接口
+KV类型都需要实现Writable接口，如果K需要排序则实现WritableComparable接口。
 
 | Java中的数据类型 | Hadoop的序列化类型（Writable） |
 | ---------------- | ------------------------------ |
@@ -196,4 +196,15 @@ InputFormat:
 - HDFS：是以Block为单位进行存储
 - MR：是以InputSplit为单位的，是一个逻辑概念，InputSplit是交给MapTask来运行的
 - 数据进入流程：InputFormat ==> Mapper ==>Shuffle ==> Reducer ==> OutputFormat
+- 需要重点关注InputSplit与Mapper的关系
+  - 一个MR作业，Mapper阶段的并行度是由InputSplit（切片）个数决定的
+  - 当文件很小时，一个文件对应一个InputSplit，对应一个MapTask
+  - 具体分片数量要看客户端具体block size，比如服务端默认128M，本地默认32M，则分片数量按32M来分
+
+
+FIleInputFormat的主要子类
+
+- KeyValueTextInputFormat
+- NLineInputFormat，按照行数进行切片，不会根据block size进行切片
+- TextInputFormat
 
