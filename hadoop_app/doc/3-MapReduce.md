@@ -250,3 +250,37 @@ MapTask/ReduceTask KEY是要排序的，MR默认按照字典顺序进行排序
 1. 继承OutputFormat父类
 2. 自定义实现RecordWriter
 3. 作业设置自定义OutpuFormat class
+
+
+
+## 10.MR整体执行流程
+
+![image-20230823165545521](imgs/MR4.png)
+
+
+
+## 11.Shuffle
+
+![image-20230823170506266](imgs/MR5.png)
+
+## 12.MR调优
+
+1. mapred-default.xml Map
+   - 一般Map split阶段不用调优，bolck size 128M基本上是一个块的优解
+   - 环形缓冲区（内存），mapreduce.task.io.sort.mb默认100M大小，溢写mapreduce.map.sort.spill.percent默认临界值0.8
+   - mapreduce.task.io.sort.factor每次文件合并个数，默认10
+   - 整个Map的内存大小，mapreduce.map.memory.mb默认1024M
+   - mapreduce.map.cpu.vcores虚拟核心默认1，生产一般4个起
+   - 每个MapTask重试机制mapreduce.map.maxattempts，默认4次，一般不动或调小
+2. mapred-default.xml Reduce
+   - mapreduce.reduce.shuffle.parallelcopies，shuffle拷贝数据个数到reduce，默认5
+   - mapreduce.reduce.shuffle.input.buffer.percent ,shuffle拷贝时内存缓冲区占比，默认0.7，可调至0.8-0.85
+   - mapreduce.reduce.shuffle.merge.percent shuffle将数据从内存合并到磁盘的临界点，默认0.66，可调大
+   - 整个Reduce的内存大小，mapreduce.reduce.memory.mb默认1024M
+   - mapreduce.reduce.cpu.vcores虚拟核心默认1，可调大
+   - 每个ReduceTask重试机制mapreduce.reduce.maxattempts，默认4次
+   - mapreduce.job.reduce.slowstart.completedmaps,作业Map输出到多少开始reduce的占比，默认0.05，可调大
+
+
+
+![image-20230823173247722](imgs/MR6.png)
