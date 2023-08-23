@@ -1,5 +1,6 @@
-package com.k66.hadoop.sort;
+package com.k66.hadoop.sort.all;
 
+import com.k66.hadoop.sort.AccessSort;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -11,7 +12,7 @@ import java.io.IOException;
  * 按照分隔符进行拆分
  * 把每一行数据转换成一个Access对象
  */
-public class AccessSortMapper extends Mapper<LongWritable , Text , AccessSort , NullWritable> {
+public class AccessSortMapper extends Mapper<LongWritable , Text , AccessSort, NullWritable> {
 
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {

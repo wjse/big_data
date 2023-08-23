@@ -1,12 +1,13 @@
-package com.k66.hadoop.sort;
+package com.k66.hadoop.sort.all;
 
 import com.k66.hadoop.HadoopDriverUtil;
+import com.k66.hadoop.sort.AccessSort;
 import org.apache.hadoop.io.NullWritable;
 
 public class AccessDriver {
 
     private static final String INPUT = "data/access-stat.data";
-    private static final String OUTPUT = "out/sort";
+    private static final String OUTPUT = "out/sort/all";
 
     public static void main(String[] args) throws Exception{
         boolean result = HadoopDriverUtil.builder()
