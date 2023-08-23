@@ -1,5 +1,6 @@
 package com.k66.hadoop.input;
 
+import com.k66.hadoop.HadoopDriverUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -7,13 +8,9 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.db.DBConfiguration;
-import org.apache.hadoop.mapreduce.lib.db.DBInputFormat;
 import org.apache.hadoop.mapreduce.lib.db.DBWritable;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -27,33 +24,24 @@ public class MysqlInputFormatApp {
 
     private static final String OUTPUT = "out/mysql";
 
-    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
-        Configuration c = new Configuration();
-        DBConfiguration.configureDB(c, "com.mysql.jdbc.Driver" , "jdbc:mysql://localhost:3306/portal_dev" , "root" , "root");
-        //获取Job对象
-        Job job = Job.getInstance(c);
-
-        //设置Job运行类
-        job.setJarByClass(MysqlInputFormatApp.class);
-
-        //设置Mapper和Reducer
-        job.setMapperClass(MyMapper.class);
-        job.setReducerClass(MyReducer.class);
-
-        //设置Mapper输出数据key value数据类型
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
-
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(LongWritable.class);
-
-        clearOutput(c);
-        //设置Job的输入输出路径
-        DBInputFormat.setInput(job , TTaskLogWritable.class , "t_task_log" , null , null , new String[]{"id" , "number" , "name" , "create_time"});
-        FileOutputFormat.setOutputPath(job , new Path(OUTPUT));
-
-        //提交Job
-        boolean result = job.waitForCompletion(true);
+    public static void main(String[] args) throws Exception{
+        boolean result = HadoopDriverUtil.builder()
+                .setDriverClass(MysqlInputFormatApp.class)
+                .setMapperClass(MyMapper.class)
+                .setReducerClass(MyReducer.class)
+                .setMapOutputKeyClass(Text.class)
+                .setMapOutputValueClass(IntWritable.class)
+                .setOutputKeyClass(Text.class)
+                .setOutputValueClass(IntWritable.class)
+                .setDbDriverClass("com.mysql.jdbc.Driver")
+                .setDbUrl("jdbc:mysql://localhost:3306/portal_dev")
+                .setDbUser("root")
+                .setDbPass("root")
+                .setDbTableName("t_task_log")
+                .setDbColumns(new String[]{"id" , "number" , "name" , "create_time"})
+                .setDbWritableClass(TTaskLogWritable.class)
+                .setOutput(OUTPUT)
+                .hadoopDBJob();
         System.exit(result ? 0 : 1);
     }
 
@@ -112,7 +100,10 @@ public class MysqlInputFormatApp {
 
         @Override
         public void write(PreparedStatement ps) throws SQLException {
-
+            ps.setLong(1 , id);
+            ps.setString(2 , number);
+            ps.setString(3 , name);
+            ps.setDate(4 , new java.sql.Date(createTime.getTime()));
         }
 
         @Override

@@ -4,10 +4,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Partitioner;
-import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.lib.db.DBConfiguration;
+import org.apache.hadoop.mapreduce.lib.db.DBInputFormat;
+import org.apache.hadoop.mapreduce.lib.db.DBOutputFormat;
+import org.apache.hadoop.mapreduce.lib.db.DBWritable;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
@@ -35,9 +36,43 @@ public class HadoopDriverUtil {
     private  Class<? extends FileInputFormat> childInputFormatClass;
 
     private Class<? extends Partitioner> partitionerClass;
-    
+
+    private Class<? extends OutputFormat> outputFormatClass;
+
+    private Class<? extends DBWritable> dbWritableClass;
+
+    private String dbDriverClass;
+    private String dbUrl;
+    private String dbUser;
+    private String dbPass;
+    private String dbTableName;
+    private String dbConditions;
+    private String dbOrderBY;
+    private String[] dbColumns;
+
     public static final String SPLIT_COUNT_KEY = "split.count";
     public static final String REDUCER_TASK_COUNT_KEY = "reducer.task.count";
+
+
+    public boolean hadoopDBJob() throws Exception{
+        if(null == driverClass || (null == input && null == output)){
+            return false;
+        }
+        Configuration c = new Configuration();
+        DBConfiguration.configureDB(c, dbDriverClass , dbUrl , dbUser , dbPass);
+        Job job = initJob(c);
+        if(null != output){
+            clearOutput(c);
+            //设置Job的输入输出路径
+            DBInputFormat.setInput(job , dbWritableClass , dbTableName , dbConditions , dbOrderBY , dbColumns);
+            FileOutputFormat.setOutputPath(job , new Path(output));
+        }else if(null != input){
+            job.setOutputFormatClass(DBOutputFormat.class);
+            FileInputFormat.setInputPaths(job , new Path(input));
+            DBOutputFormat.setOutput(job , dbTableName , dbColumns);
+        }
+        return job.waitForCompletion(true);
+    }
 
     public  boolean hadoopFSJob(Map<String , Object> configMap) throws Exception{
         if(null == driverClass || null == input || null == output){
@@ -45,6 +80,43 @@ public class HadoopDriverUtil {
         }
 
         Configuration c = new Configuration();
+        Job job = initJob(c);
+        //设置Partitioner
+        if(null != partitionerClass){
+            job.setPartitionerClass(partitionerClass);
+            if(null != configMap && configMap.containsKey(REDUCER_TASK_COUNT_KEY)){
+                job.setNumReduceTasks((Integer) configMap.get(REDUCER_TASK_COUNT_KEY));
+            }
+        }
+
+        //设置其他InputFormat
+        if(null != childInputFormatClass){
+            if(childInputFormatClass.getName().equals(KeyValueTextInputFormat.class.getName())){
+                if(null != configMap && configMap.size() > 0){
+                    configMap.forEach((k , v) -> c.set(k , v.toString()));
+                }
+            }else if(childInputFormatClass.getName().equals(NLineInputFormat.class.getName())){
+                if(null != configMap && configMap.containsKey(SPLIT_COUNT_KEY)){
+                    NLineInputFormat.setNumLinesPerSplit(job , (Integer) configMap.get(SPLIT_COUNT_KEY));
+                }
+            }
+            job.setInputFormatClass(childInputFormatClass);
+        }
+
+        clearOutput(c);
+
+        //设置Job的输入输出路径
+        FileInputFormat.setInputPaths(job , new Path(input));
+        if(null != outputFormatClass){
+            job.setOutputFormatClass(outputFormatClass);
+        }
+        FileOutputFormat.setOutputPath(job , new Path(output));
+
+        //提交Job
+        return job.waitForCompletion(true);
+    }
+
+    private Job initJob(Configuration c) throws IOException {
         //获取Job对象
         Job job = Job.getInstance(c);
 
@@ -79,37 +151,7 @@ public class HadoopDriverUtil {
         if(null != outputValueClass){
             job.setOutputValueClass(outputValueClass);
         }
-
-        //设置Partitioner
-        if(null != partitionerClass){
-            job.setPartitionerClass(partitionerClass);
-            if(null != configMap && configMap.containsKey(REDUCER_TASK_COUNT_KEY)){
-                job.setNumReduceTasks((Integer) configMap.get(REDUCER_TASK_COUNT_KEY));
-            }
-        }
-
-        //设置其他InputFormat
-        if(null != childInputFormatClass){
-            if(childInputFormatClass.getName().equals(KeyValueTextInputFormat.class.getName())){
-                if(null != configMap && configMap.size() > 0){
-                    configMap.forEach((k , v) -> c.set(k , v.toString()));
-                }
-            }else if(childInputFormatClass.getName().equals(NLineInputFormat.class.getName())){
-                if(null != configMap && configMap.containsKey(SPLIT_COUNT_KEY)){
-                    NLineInputFormat.setNumLinesPerSplit(job , (Integer) configMap.get(SPLIT_COUNT_KEY));
-                }
-            }
-            job.setInputFormatClass(childInputFormatClass);
-        }
-
-        clearOutput(c);
-
-        //设置Job的输入输出路径
-        FileInputFormat.setInputPaths(job , new Path(input));
-        FileOutputFormat.setOutputPath(job , new Path(output));
-
-        //提交Job
-        return job.waitForCompletion(true);
+        return job;
     }
     
     private HadoopDriverUtil(){}
@@ -183,6 +225,56 @@ public class HadoopDriverUtil {
 
     public HadoopDriverUtil setPartitionerClass(Class<? extends Partitioner> partitionerClass) {
         this.partitionerClass = partitionerClass;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbWritableClass(Class<? extends DBWritable> dbWritableClass) {
+        this.dbWritableClass = dbWritableClass;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbDriverClass(String dbDriverClass) {
+        this.dbDriverClass = dbDriverClass;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbUrl(String dbUrl) {
+        this.dbUrl = dbUrl;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbUser(String dbUser) {
+        this.dbUser = dbUser;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbPass(String dbPass) {
+        this.dbPass = dbPass;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbTableName(String dbTableName) {
+        this.dbTableName = dbTableName;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbConditions(String dbConditions) {
+        this.dbConditions = dbConditions;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbOrderBY(String dbOrderBY) {
+        this.dbOrderBY = dbOrderBY;
+        return this;
+    }
+
+    public HadoopDriverUtil setDbColumns(String[] dbColumns) {
+        this.dbColumns = dbColumns;
+        return this;
+    }
+
+    public HadoopDriverUtil setOutputFormatClass(Class<? extends OutputFormat> outputFormatClass) {
+        this.outputFormatClass = outputFormatClass;
         return this;
     }
 }

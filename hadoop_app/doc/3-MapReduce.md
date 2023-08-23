@@ -240,3 +240,13 @@ MapTask/ReduceTask KEY是要排序的，MR默认按照字典顺序进行排序
 - 全排序：输出只有一个文件（只有一个Reducer），如果遇到大数据量，这就是性能瓶颈，对应Hive order by xxx
 - 分区内排序：Partitioner 分区内排了序的，可以有多个Reducer，但不保证全局排序, 对应Hive sort by xxx
 - 二次排序：多个属性排序
+
+
+
+## 9.OutputFormat
+
+自定义OutputFormat
+
+1. 继承OutputFormat父类
+2. 自定义实现RecordWriter
+3. 作业设置自定义OutpuFormat class
