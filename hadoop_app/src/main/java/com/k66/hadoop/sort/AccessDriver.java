@@ -1,23 +1,22 @@
-package com.k66.hadoop.ser;
+package com.k66.hadoop.sort;
 
 import com.k66.hadoop.HadoopDriverUtil;
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
 
 public class AccessDriver {
 
-    private static final String INPUT = "data/access.data";
-    private static final String OUTPUT = "out";
+    private static final String INPUT = "data/access-stat.data";
+    private static final String OUTPUT = "out/sort";
 
     public static void main(String[] args) throws Exception{
         boolean result = HadoopDriverUtil.builder()
                 .setDriverClass(AccessDriver.class)
-                .setMapperClass(AccessMapper.class)
-                .setReducerClass(AccessReducer.class)
-                .setMapOutputKeyClass(Text.class)
-                .setMapOutputValueClass(Access.class)
+                .setMapperClass(AccessSortMapper.class)
+                .setReducerClass(AccessSortReducer.class)
+                .setMapOutputKeyClass(AccessSort.class)
+                .setMapOutputValueClass(NullWritable.class)
                 .setOutputKeyClass(NullWritable.class)
-                .setOutputValueClass(Access.class)
+                .setOutputValueClass(AccessSort.class)
                 .setInput(INPUT)
                 .setOutput(OUTPUT)
                 .hadoopFSJob(null);

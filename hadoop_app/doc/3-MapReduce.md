@@ -224,3 +224,19 @@ DBInputFormat数据库输入操作
 2. reduce > partitioner ,输出5个文件，有两个文件时空的，reduce数量决定输出文件数量
 3. reduce = 1 ,则输出1个文件，所有分区信息在该文件内
 4. reduce < partitioner , 则会报错
+
+
+
+## 7.Combiner
+
+Combiner是一个本地Reducer操作，Reducer是在接收所有Mapper的结果之后进行处理，Combiner是在每个MapTask上运行的，对每个MapTask的输出做本地汇总，进而减少数据的网络传输量。Combiner本质就是Reducer，只是位置不同，Combiner不能影响最终的结果，比如平均数就不能使用Combiner
+
+![MR3](imgs/MR3.jpg)
+
+## 8.MR中的排序
+
+MapTask/ReduceTask KEY是要排序的，MR默认按照字典顺序进行排序
+
+- 全排序：输出只有一个文件（只有一个Reducer），如果遇到大数据量，这就是性能瓶颈，对应Hive order by xxx
+- 分区内排序：Partitioner 分区内排了序的，可以有多个Reducer，但不保证全局排序, 对应Hive sort by xxx
+- 二次排序：多个属性排序

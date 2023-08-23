@@ -1,7 +1,7 @@
-package com.k66.hadoop.ser;
+package com.k66.hadoop.sort;
 
 
-import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -10,17 +10,17 @@ import java.io.IOException;
 /**
  * 自定义类型
  */
-public class Access implements Writable {
+public class AccessSort implements WritableComparable<AccessSort> {
 
     private String phone;
     private long up;
     private long down;
     private long sum;
 
-    public Access() {
+    public AccessSort() {
     }
 
-    public Access(String phone, long up, long down) {
+    public AccessSort(String phone, long up, long down) {
         this.phone = phone;
         this.up = up;
         this.down = down;
@@ -90,5 +90,10 @@ public class Access implements Writable {
     @Override
     public String toString(){
         return String.format("%s,%s,%s,%s" , phone , up , down , sum);
+    }
+
+    @Override
+    public int compareTo(AccessSort o) {
+        return  this.sum > o.sum ? -1 : 1;
     }
 }
