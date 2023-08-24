@@ -1,5 +1,6 @@
 package com.k66.hadoop;
 
+import java.net.URI;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -15,6 +16,7 @@ import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class HadoopDriverUtil {
@@ -50,6 +52,9 @@ public class HadoopDriverUtil {
     private String dbOrderBY;
     private String[] dbColumns;
 
+    private List<URI> cacheFileURIList;
+
+
     public static final String SPLIT_COUNT_KEY = "split.count";
     public static final String REDUCER_TASK_COUNT_KEY = "reducer.task.count";
 
@@ -84,9 +89,10 @@ public class HadoopDriverUtil {
         //设置Partitioner
         if(null != partitionerClass){
             job.setPartitionerClass(partitionerClass);
-            if(null != configMap && configMap.containsKey(REDUCER_TASK_COUNT_KEY)){
-                job.setNumReduceTasks((Integer) configMap.get(REDUCER_TASK_COUNT_KEY));
-            }
+        }
+
+        if(null != configMap && configMap.containsKey(REDUCER_TASK_COUNT_KEY)){
+            job.setNumReduceTasks((Integer) configMap.get(REDUCER_TASK_COUNT_KEY));
         }
 
         //设置其他InputFormat
@@ -150,6 +156,11 @@ public class HadoopDriverUtil {
         }
         if(null != outputValueClass){
             job.setOutputValueClass(outputValueClass);
+        }
+
+        //加载小表数据
+        if(null != cacheFileURIList){
+            cacheFileURIList.forEach(u -> job.addCacheFile(u));
         }
         return job;
     }
@@ -275,6 +286,11 @@ public class HadoopDriverUtil {
 
     public HadoopDriverUtil setOutputFormatClass(Class<? extends OutputFormat> outputFormatClass) {
         this.outputFormatClass = outputFormatClass;
+        return this;
+    }
+
+    public HadoopDriverUtil setCacheFileURIList(List<URI> cacheFileURIList) {
+        this.cacheFileURIList = cacheFileURIList;
         return this;
     }
 }

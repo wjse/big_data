@@ -257,7 +257,7 @@ MapTask/ReduceTask KEY是要排序的，MR默认按照字典顺序进行排序
 
 ![image-20230823165545521](imgs/MR4.png)
 
-
+![image-20230824135211986](imgs/MR7.png)
 
 ## 11.Shuffle
 
@@ -284,3 +284,17 @@ MapTask/ReduceTask KEY是要排序的，MR默认按照字典顺序进行排序
 
 
 ![image-20230823173247722](imgs/MR6.png)
+
+
+
+## 13.Join
+
+### 1.Maper join
+
+![image-20230824170648224](imgs/MR9.png)
+
+### 2.Reducer join
+
+又叫Shuffle join 或 Common join
+
+![image-20230824154929010](imgs/MR8.png)
