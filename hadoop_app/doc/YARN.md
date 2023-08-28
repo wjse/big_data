@@ -72,7 +72,7 @@ YARN将资源管理功能和作业监控以及作业调度拆分成独立的进�
     </property>
     <property>
         <name>mapreduce.application.classpath</name>
-        <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/...</value>
+        <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
     </property>
 </configuration>
 ```
@@ -87,7 +87,7 @@ YARN将资源管理功能和作业监控以及作业调度拆分成独立的进�
     </property>
     <property>
         <name>yarn.nodemanager.env-whitelist</name>
-        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME....</value>
+        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_HOME,PATH,LANG,TZ,HADOOP_MAPRED_HOME</value>
     </property>
 </configuration>
 ```
@@ -136,5 +136,138 @@ YARN将资源管理功能和作业监控以及作业调度拆分成独立的进�
 
 ```shell
 bin/mapred --daemon start historyserver
+```
+
+
+
+## 5.YARN调度器
+
+- FIFO
+- Capacity(默认)
+  - 共享的
+  - 多租户的
+  - 资源可借
+  - 层级结构队列
+  - 容量保障
+  - 安全性
+  - 弹性可扩展
+- Fair
+
+
+
+配置capacity-scheduler.xml
+
+```xml
+<property>
+  <!-- 添加spark队列 -->
+  <name>yarn.scheduler.capacity.root.queues</name>
+  <value>default,spark</value>
+  <description>
+    The queues at the this level (root is the root queue).
+  </description>
+</property>
+
+<!-- 队列占比 -->
+<property>
+  <name>yarn.scheduler.capacity.root.default.capacity</name>
+  <value>30</value>
+  <description>Default queue target capacity.</description>
+</property>
+<property>
+  <name>yarn.scheduler.capacity.root.spark.capacity</name>
+  <value>70</value>
+  <description>Spark queue target capacity.</description>
+</property>
+
+<!-- 超出最大占比 -->
+<property>
+  <name>yarn.scheduler.capacity.root.default.maximum-capacity</name>
+  <value>60</value>
+  <description>
+    The maximum capacity of the default queue. 
+  </description>
+</property>
+
+<property>
+  <name>yarn.scheduler.capacity.root.spark.maximum-capacity</name>
+  <value>80</value>
+  <description>
+    The maximum capacity of the spark queue. 
+  </description>
+</property>
+
+<!-- 层级队列 -->
+<property>
+  <name>yarn.scheduler.capacity.root.spark.queues</name>
+  <value>child</value>
+  <description>
+    The queues at the this level (spark is the parent queue).
+  </description>
+</property>
+
+<!-- 开启队列 -->
+<property>
+  <name>yarn.scheduler.capacity.root.default.state</name>
+  <value>RUNNING</value>
+  <description>
+    The state of the default queue. State can be one of RUNNING or STOPPED.
+  </description>
+</property>
+<property>
+  <name>yarn.scheduler.capacity.root.spark.state</name>
+  <value>RUNNING</value>
+  <description>
+    The state of the spark queue. State can be one of RUNNING or STOPPED.
+  </description>
+</property>
+
+<!-- 队列ACL提交作业权限 -->
+<property>
+  <name>yarn.scheduler.capacity.root.default.acl_submit_applications</name>
+  <value>*</value>
+  <description>
+    The ACL of who can submit jobs to the default queue.
+  </description>
+</property>
+<property>
+  <name>yarn.scheduler.capacity.root.spark.acl_submit_applications</name>
+  <value>*</value>
+  <description>
+    The ACL of who can submit jobs to the spark queue.
+  </description>
+</property>
+
+<!-- 队列ACL管理权限 -->
+<property>
+  <name>yarn.scheduler.capacity.root.default.acl_administer_queue</name>
+  <value>*</value>
+  <description>
+    The ACL of who can administer jobs on the default queue.
+  </description>
+</property>
+<property>
+  <name>yarn.scheduler.capacity.root.spark.acl_administer_queue</name>
+  <value>*</value>
+  <description>
+    The ACL of who can administer jobs on the spark queue.
+  </description>
+</property>
+```
+
+指定队列运行：
+
+```shell
+hadoop jar hadoop-mapreduce-examples.jar pi -Dmapreduce.job.queuename=spark 2 3
+```
+
+
+
+配置队列优先级yarn-site.xml
+
+```xml
+<property>
+  <name>yarn.cluster.max-application-priority</name>
+  <value>5</value>
+</property>
 ```
 

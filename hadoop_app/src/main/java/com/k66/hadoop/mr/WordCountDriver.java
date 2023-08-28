@@ -6,10 +6,14 @@ import org.apache.hadoop.io.Text;
 
 public class WordCountDriver {
 
-    private static final String INPUT = "data/wc";
-    private static final String OUTPUT = "out";
-
     public static void main(String[] args) throws Exception{
+        if(null == args || args.length != 2){
+            System.out.println("Please input the right args : <input><output>");
+            System.exit(1);
+        }
+
+        String input = args[0];
+        String output = args[1];
         boolean result = HadoopDriverUtil.builder()
                 .setDriverClass(WordCountDriver.class)
                 .setMapperClass(WordCountMapper.class)
@@ -18,8 +22,8 @@ public class WordCountDriver {
                 .setMapOutputValueClass(IntWritable.class)
                 .setOutputKeyClass(Text.class)
                 .setOutputValueClass(IntWritable.class)
-                .setInput(INPUT)
-                .setOutput(OUTPUT)
+                .setInput(input)
+                .setOutput(output)
                 .hadoopFSJob(null);
         System.exit(result ? 0 : 1);
     }

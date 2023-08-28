@@ -14,9 +14,9 @@ public class HadoopUtil {
     private static FileSystem fs;
 
     static {
-        System.setProperty("HADOOP_USER_NAME" , "k66");
+        System.setProperty("HADOOP_USER_NAME" , "hadoop");
         c = new Configuration();
-        c.set("fs.defaultFS" , "hdfs://krrk66:9000");
+        c.set("fs.defaultFS" , "hdfs://hadoop.krrk66.club:9000");
         c.set("dfs.client.use.datanode.hostname" , "true");
         c.set("dfs.replication" , "1");
         try {
