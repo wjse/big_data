@@ -722,3 +722,57 @@ mapreduce.job.reduces=<number>   #
 ```
 
 根据作业数据量，作业结果有多小，再反推来设置reduce个数
+
+
+
+### 10.2 数据倾斜
+
+产生的原因：某个或某几个key的数据过大或过于集中，相同的key是在一个ReduceTask中运行的，运行时间会比较长或可能Task无法执行完成。
+
+MapTask join时不会产生数据倾斜，只有在Reduce端产生（shuffle），比如group by ，count(distinct col)的时候
+
+```properties
+hive.groupby.skewindata=true   #设置groupby优化，底层为先打散后聚合
+```
+
+一般不用count(distinct)，由select count(1) from (select col from t group by col) 代替。
+
+MapTask join不产生数据倾斜是因为默认配置
+
+```properties
+hive.auto.convert.join=true    #设置map join转换
+```
+
+该配置将本来有Reduce Task执行的join步骤，转换由Loca Map Task执行，将小表数据进行缓存，在Map端进行join，下面配置设置小表文件大小
+
+```properties
+hive.smalltable.filesize=25000000    #默认25M
+#或
+hive.mapjoin.smalltable.filezise=25000000  #0.8.1版本后替代
+```
+
+谁是小表，是在hive元数据表中有记录，所以hive指导谁是小表
+
+
+
+如何避免数据倾斜？
+
+**先打散后聚合**
+
+以WordCount为例：
+
+Map                                打散
+
+​      <word,1>                 <随机数_word,1>
+
+Reduce                          
+
+​      累加          算一次
+
+​                                        再进行Map
+
+​                                                   <随机数_word, cnt>     去掉随机数
+
+​                                        再进行Reduce
+
+​                                                    累加聚合
