@@ -1,4 +1,4 @@
-package com.k66.scala.basic
+package com.k66.scala.oo
 
 object ApplyTest {
   def apply() = {
