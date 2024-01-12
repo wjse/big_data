@@ -653,3 +653,191 @@ trait Service{
 class StudentService extends Service with DAO
 ```
 
+
+
+### 2.9 隐式转换
+
+scala提供大量与java互相转换的类
+
+```scala
+val list = new ArrayList[String] //java list
+for(s <- list){//报错
+  println(s)
+}
+
+//转换
+import scala.collection.JavaConverters
+for(s <- list.asScala){
+  println(s)
+}
+```
+
+
+
+### 2.10 包对象
+
+在对应包下所有的class或object都可访问
+
+```scala
+package object oo{
+  def methodA():Unit = {
+    println("包全局可用方法")
+  }
+}
+
+package oo
+
+class TestA{
+  def main(args: Array[String]): Unit = {
+    methodA
+  }
+}
+```
+
+
+
+## 3、Scala集合
+
+- 集合架构
+- Array
+- Set
+- List
+- Map
+- Tuple
+
+
+
+### 3.1 集合架构
+
+mutable : 可变，对于某个集合可以直接对原对象进行修改，不会返回新的对象。scala.collection.mutable
+
+immutable : 不可变，对某个集合对象做了修改，返回的是一个新的对象，而不会对原对象进行修改。scala.collection.immutable
+
+
+
+scala.collection
+
+High level abstract class or trait
+
+![General collection hierarchy](https://docs.scala-lang.org/resources/images/tour/collections-diagram-213.svg)
+
+scala.collection.immutable
+
+![Immutable collection hierarchy](https://docs.scala-lang.org/resources/images/tour/collections-immutable-diagram-213.svg)
+
+
+
+scala.collection.mutable
+
+![Mutable collection hierarchy](https://docs.scala-lang.org/resources/images/tour/collections-mutable-diagram-213.svg)
+
+
+
+![Graph legend](https://docs.scala-lang.org/resources/images/tour/collections-legend-diagram.svg)
+
+- 虚线是通过隐式转换
+- 粗实线是默认的实现
+- 细实线是实现
+
+
+
+### 3.2 Array
+
+```scala
+object ArrayApp {
+  def main(args: Array[String]): Unit = {
+    //不可变
+    val a = new Array[String](5)
+    a(0) = "k66"
+    a(1) = "k77"
+    a(2) = "k88"
+    a(3) = "k99"
+    println(a(3))
+
+    //不写类型，默认Nothing类型
+    val b = new Array(3)
+    println(b)
+
+    //底层调用apply方法
+    val c = Array("k66" , "b77")
+    println(c)
+
+    val d = Array(1,2,3,4)
+    val d1 = d :+ 100 //数组拷贝并在末尾添加100这个元素，返回新数组
+    println(d1(4))
+    val d2 = 100 +: d //数组拷贝并在首位添加100这个元素，返回新数组
+    println(d2(0))
+
+    val dd = Array(5,6)
+    val ddd = d ++ dd //两个数组进行连接，返回新数组，注意++语义不同于变量++
+    for(i <- ddd) print(i)
+    println()
+    ddd.foreach(print)//函数式foreach
+    println()
+    for(i <- ddd.length to 0 by -1) print(i) //倒序输出
+
+    println()
+    println(ddd.max)
+    println(ddd.min)
+    println(ddd.sum)
+
+    println(ddd.mkString(","))
+    println(ddd.mkString("[", "," , "]"))
+  }
+}
+```
+
+
+
+**ArrayBuffer 可变数组** ***
+
+```scala
+import scala.collection.mutable.ArrayBuffer
+
+object ArrayBufferApp {
+  def main(args: Array[String]): Unit = {
+    val ab = ArrayBuffer(1, 2, 3)
+    println(ab.mkString("[", ",", "]"))//[1 , 2, 3]
+
+    ab += 1
+    println(ab.mkString("[", ",", "]"))//[1,2,3,1]
+
+    ab += (7 , 8 , 9)
+    println(ab.mkString("[", ",", "]"))//[1,2,3,1,7,8,9]
+
+    ab.insert(0 , 0)
+    println(ab.mkString("[", ",", "]"))//[0,1,2,3,1,7,8,9]
+
+    ab.remove(1)
+    println(ab.mkString("[", ",", "]"))//[0,2,3,1,7,8,9]
+
+    ab.remove(2 , 4)//从2位置开始删4个元素
+    println(ab.mkString("[", ",", "]"))//[0,2,9]
+
+    ab.trimEnd(1)//从末尾开始删1个
+    println(ab.mkString("[", ",", "]"))//[0,2]
+
+    10 +=: ab
+    println(ab.mkString("[", ",", "]"))//[10 , 0,2]
+
+    ab -= 10
+    println(ab.mkString("[", ",", "]"))//[0,2]
+
+    val b1 = ArrayBuffer(10 , 5 , 6)
+    val b2 = ArrayBuffer(1 , 2 , 30 , 40)
+
+    val b21 = 99 +: b2 :+ 10
+    println(b2.mkString("[", ",", "]")) //[1,2,30,40]
+    println(b21.mkString("[", ",", "]"))//[99,1,2,30,40,10]
+
+    b1 ++= b2 //等价于 b1 = b1 + b2
+    println(b1.mkString("[", ",", "]"))//[10,5,6,1,2,30,40]
+    //关键看=，是否赋值
+
+    b1 ++=: b2 // ++=:
+    println(b1.mkString("[", ",", "]"))//b1 不变，元素加到b2
+    println(b2.mkString("[", ",", "]"))//[10,5,6,1,2,30,40,1,2,30,40]
+  }
+}
+```
+

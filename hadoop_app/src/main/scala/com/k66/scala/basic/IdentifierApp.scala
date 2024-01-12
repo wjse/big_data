@@ -28,7 +28,7 @@ object IdentifierApp {
     val _ = "_"
     val `try` = "try"
     val +-*/ = "+-*/"
-    println(int , _ , `try`) //_打印报错
+//    println(int , _ , `try`) //_打印报错
     """
       |
       |""".stripMargin
