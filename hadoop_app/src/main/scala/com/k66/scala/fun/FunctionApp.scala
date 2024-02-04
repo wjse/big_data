@@ -96,9 +96,9 @@ object FunctionApp {
     println(eq("Krr")("KRR"))
   }
 
-  def test06(): Unit = {
+  private def test06(): Unit = {
     val l = List(1,2,3,4,5,6,7,8)
-    //自定义一个foreach函数
+    //自定义foreach函数
     def foreach(l:List[Int] , f : Int => Unit) = {
       for(e <- l)
         f(e)
@@ -107,24 +107,27 @@ object FunctionApp {
 //    foreach(l , x => println(x))
     foreach(l , println)
     println("========================")
+
+    //自定义filter函数
     def filter(l:List[Int] , f : Int => Boolean) = {
-      for(e <- l if f(e))
+      for(e <- l if f(e)) //守护遍历
         yield e
     }
 //    filter(l , x => x % 2 == 0).foreach(println)
     filter(l , _% 2 == 0).foreach(println)
     println("========================")
-
     filter(l , _ > 6).foreach(println)
+    println("========================")
 
+    //自定义map函数
     def map(l:List[Int] , f : Int => Int) = {
       for(e <- l)
         yield f(e)
     }
-
-    println("========================")
     map(l , _ * 2).foreach(println)
+    println("========================")
 
+    //自定义reduce函数
     def reduce(l:List[Int] , f : (Int , Int) => Int) = {
       var first = l(0)
       for(i <- 1 until(l.length)){
@@ -138,7 +141,7 @@ object FunctionApp {
 
     println("========================")
     println(reduce(l , (x, y) => {
-      println(s"$x === $y")
+      println(s"$x === $y")//reduce 过程展示
       x + y
     }))
   }
