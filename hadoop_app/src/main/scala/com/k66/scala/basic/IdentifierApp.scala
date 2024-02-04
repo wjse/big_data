@@ -1,6 +1,5 @@
 package com.k66.scala.basic
 
-import scala.io.StdIn
 import scala.util.control.Breaks._
 
 /**
