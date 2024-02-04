@@ -1,12 +1,12 @@
 ## Scala
 
-> Scala是一门多范式（面向对象、函数式编程等）的，类似于Java的，运行在JVM之上的编程语言
+> Scala是一门多范式（面向对象函数式编程等）的，类似于Java的，运行在JVM之上的编程语言
 
 https://scala-lang.org/
 
 https://docs.scala-lang.org/
 
-## 1、Scala基础
+## 1 Scala基础
 
 - 标识符
 - 数据类型
@@ -24,7 +24,7 @@ https://docs.scala-lang.org/
 
 
 
-### 1.1、标识符
+### 1.1标识符
 
 ```scala
 object IdentifierApp {
@@ -62,7 +62,7 @@ object IdentifierApp {
 
 
 
-### 1.2、数据类型
+### 1.2数据类型
 
 ![https://docs.scala-lang.org/resources/images/tour/unified-types-diagram.svg](https://docs.scala-lang.org/resources/images/tour/unified-types-diagram.svg)
 
@@ -87,7 +87,7 @@ var l = 8543423408545L //真正的Long型
 
 
 
-### 1.3、数据类型转换
+### 1.3数据类型转换
 
 ![https://docs.scala-lang.org/resources/images/tour/type-casting-diagram.svg](https://docs.scala-lang.org/resources/images/tour/type-casting-diagram.svg)
 
@@ -103,7 +103,7 @@ val d = (10 * 3.5 + 6 * 3.5).toInt //56
 
 
 
-### 1.4、字符串操作
+### 1.4字符串操作
 
 字符串插值
 
@@ -123,7 +123,7 @@ val sql = """
 
 
 
-### 1.5、从控制台读取数据
+### 1.5从控制台读取数据
 
 ```scala
 println("What's your name")
@@ -140,7 +140,7 @@ println(s"name = $name , age = $age , money = $money")
 
 
 
-### 1.6、运算符
+### 1.6运算符
 
 ```scala
 val s1 = "abc"
@@ -153,7 +153,7 @@ println(s1.eq(s2)) //false
 
 
 
-### 1.7、条件分支
+### 1.7条件分支
 
 if返回值
 
@@ -165,7 +165,7 @@ if返回值
 
 
 
-### 1.8、循环分支
+### 1.8循环分支
 
 scala中退出循环不像java中直接使用break关键字，而是需要scala.util.control.Breaks包的内容
 
@@ -282,7 +282,7 @@ str.map(s => s.toUpper).foreach(print)
 
 
 
-### 1.9、方法定义
+### 1.9方法定义
 
 ```scala
 def max(x:Int , y:Int):Int = {
@@ -328,9 +328,9 @@ sum(1 to 100 : _*)//将Range类型转换为方法定义参数类型
 
 
 
-## 2、Scala面向对象编程
+## 2 Scala面向对象编程
 
-### 2.1 getter/setter
+### 2.1getter/setter
 
 val为常量，scala默认只会生成对应变量名的get方法
 
@@ -340,7 +340,7 @@ private声明的变量对应生成的getter也是private的
 
 
 
-### 2.2 _占位符
+### 2.2_占位符
 
 "_"在scala中有一个功能为占位符，必须指定数据类型，如
 
@@ -388,7 +388,7 @@ class Student(name:String , age:Int , val major:String) extends Person(name , ag
 
 
 
-### 2.5 抽象类
+### 2.5抽象类
 
 ```scala
 abstract class Person{
@@ -655,7 +655,7 @@ class StudentService extends Service with DAO
 
 
 
-### 2.9 隐式转换
+### 2.9隐式转换
 
 scala提供大量与java互相转换的类
 
@@ -696,7 +696,7 @@ class TestA{
 
 
 
-## 3、Scala集合
+## 3 Scala集合
 
 - 集合架构
 - Array
@@ -741,7 +741,7 @@ scala.collection.mutable
 
 
 
-### 3.2 Array
+### 3.2Array
 
 ```scala
 object ArrayApp {
@@ -1031,11 +1031,11 @@ object MapApp {
 
 
 
-## 4、Scala模式匹配
+## 4 Scala模式匹配
 
 
 
-### 4.1、隐式转换
+### 4.1隐式转换
 
 在Spark源码里，是非常多使用的，
 
@@ -1047,7 +1047,7 @@ Scala:隐式转换，偷偷的（隐式）对现有功能进行增强（转换�
 
 
 
-### 4.2、 模式匹配
+### 4.2模式匹配
 
 ```scala
 //类似于java switch
@@ -1375,7 +1375,7 @@ object PartialFunctionApp {
 
 
 
-## 5、Scala函数式编程
+## 5 Scala函数式编程
 
 - 函数的定义和使用
 - 函数 VS 方法
@@ -1383,3 +1383,201 @@ object PartialFunctionApp {
 - Currying
 - 自定义算子实现高阶函数
 - 高阶算子使用实战
+
+
+
+### 5.1函数的定义和使用
+
+- Scala中函数的定义方式一 , **val/var 函数名称 = (参数列表) => {函数体}**
+- Scala中函数的定义方式二, **val/var 函数名称 : (入参类型) => 返回值类型 = (入参变量) => {函数体}**
+
+```scala
+package com.k66.scala.fun
+
+object FunctionApp {
+  def main(args: Array[String]): Unit = {
+    test01()
+    test02()
+  }
+
+  /**
+   * Scala中函数的定义方式一
+   * val/var 函数名称 = (参数列表) => {函数体}
+   */
+  def test01(): Unit = {
+    //$Lambda$1/2075203460@26aa12dd
+    val f1 = (a:Int , b:Int) => a + b
+    println(f1)
+    println(f1(1 ,2 ))
+  }
+
+  /**
+   * Scala中函数的定义方式二
+   * val/var 函数名称 : (入参类型) => 返回值类型 = (入参变量) => {函数体}
+   */
+  def test02(): Unit = {
+    val f2 : (Int , Int) => Int = (a , b) => a + b
+    println(f2)
+    println(f2(1, 2))
+  }
+}
+
+```
+
+
+
+### 5.2函数 VS 方法
+
+- 定义层面不同，方法**def** ， 函数 **=>**
+- 方法本质上是一个特殊的函数，在Scala中函数是一等公民
+- **函数可以当做值来传递，方法的参数返回值都可以是函数**
+
+
+
+### 5.3高阶函数
+
+方法和函数转换
+
+```scala
+package com.k66.scala.fun
+
+object FunctionApp {
+  def main(args: Array[String]): Unit = {
+    test03()
+  }
+
+  def test03(): Unit = {
+    def sayHello(str:String):Unit = {
+      println(s"Hello $str")
+    }
+
+    //将方法赋值给一个函数变量：方法名后面+空格_
+    val sayHelloM = sayHello _
+    //$Lambda$7/1908143486@7f13d6e
+    println(sayHelloM)
+    sayHelloM("Krr")
+
+    val sayHellF : (String) => Unit = sayHelloM
+    sayHellF("Fun")
+
+    //把函数当入参，参数是函数的函数叫做高阶函数
+    def foo(op:(String) => Unit) = {
+      op("God")
+    }
+
+    foo(sayHelloM)
+
+    def foo2(op:() => Unit) = op()
+    def p = println("Hello")
+
+    //_是方法和函数的转换桥梁
+    foo2(p _)
+  }
+}
+
+```
+
+
+
+函数作为参数
+
+```scala
+def test04(): Unit = {
+    val f = () => {}
+
+    def foo(f:() => Unit) = f()
+    foo(() => println("匿名函数调用"))
+    foo(f)
+
+    def foo2(add:(Int , Int) => Int) = println(add(10 , 20))
+    foo2((a , b) => a + b)
+    //第一个_表示第一个参数，第二个_表示第二个参数，每个参数只能使用一次
+    foo2(_ + _)
+    foo2(_ * _)
+
+    def cal(a:Int , b:Int , operator:(Int , Int) => Int):Int = operator(a , b)
+    def add(a:Int , b:Int) = a + b
+    def mul(a:Int , b:Int) = a * b
+
+    println(cal(2 ,3 , add))
+    println(cal(2 ,3 , mul))
+    println(cal(2 ,3 , (a , b) => a - b))//匿名函数
+    println(cal(6 ,3 , _/_))//简化版
+}
+```
+
+
+
+### 5.4Currying 科里化
+
+```scala
+   def test05(): Unit ={
+    //常规方法定义
+    def sum(a:Int , b:Int) = a + b
+    println(sum(3 , 4))
+
+    //科里化定义
+    def sumC(a:Int)(b:Int) = a + b
+    println(sumC(3)(4))
+
+    def eq(x:String)(y:String) = x.toLowerCase == y.toLowerCase //Scala中可直接使用==来比较
+    println(eq("Krr")("KRR"))
+  }
+```
+
+
+
+### 5.5自定义算子实现高阶函数
+
+```scala
+  def test06(): Unit = {
+    val l = List(1,2,3,4,5,6,7,8)
+    //自定义foreach函数
+    def foreach(l:List[Int] , f : Int => Unit) = {
+      for(e <- l)
+        f(e)
+    }
+
+//    foreach(l , x => println(x))
+    foreach(l , println)
+    println("========================")
+    
+    //自定义filter函数
+    def filter(l:List[Int] , f : Int => Boolean) = {
+      for(e <- l if f(e))
+        yield e
+    }
+//    filter(l , x => x % 2 == 0).foreach(println)
+    filter(l , _% 2 == 0).foreach(println)
+    println("========================")
+    filter(l , _ > 6).foreach(println)
+    println("========================")
+
+    //自定义map函数
+    def map(l:List[Int] , f : Int => Int) = {
+      for(e <- l)
+        yield f(e)
+    }
+    map(l , _ * 2).foreach(println)
+    println("========================")
+
+    //自定义reduce函数
+    def reduce(l:List[Int] , f : (Int , Int) => Int) = {
+      var first = l(0)
+      for(i <- 1 until(l.length)){
+        first = f(first , l(i))
+      }
+      first
+    }
+
+    println("========================")
+    println(reduce(l , _ + _))
+
+    println("========================")
+    println(reduce(l , (x, y) => {
+      println(s"$x === $y")//reduce 过程展现
+      x + y
+    }))
+  }
+```
+
